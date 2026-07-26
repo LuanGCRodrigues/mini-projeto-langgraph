@@ -121,3 +121,46 @@ class CompraDetailResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
+# ============= RELATÓRIOS =============
+
+class ProdutoResumo(BaseModel):
+    id: int
+    nome: str
+    quantidade_comprada: int
+
+
+class RelatorioClienteResponse(BaseModel):
+    cliente: ClienteResponse
+    total_compras: int
+    valor_total_gasto: float
+    ultima_compra_em: Optional[datetime]
+    produtos_mais_comprados: list[ProdutoResumo]
+
+
+class RelatorioProdutoMaisVendido(BaseModel):
+    produto_id: int
+    nome: str
+    quantidade_vendida: int
+    receita_total: float
+
+
+class RelatorioProdutosMaisVendidosResponse(BaseModel):
+    periodo: dict[str, Optional[datetime]]
+    produtos: list[RelatorioProdutoMaisVendido]
+
+
+class RelatorioResumoComprasResponse(BaseModel):
+    periodo: dict[str, Optional[datetime]]
+    quantidade_total: int
+    receita_total: float
+    ticket_medio: float
+
+
+class RelatorioEstoqueBaixoResponse(BaseModel):
+    id: int
+    nome: str
+    categoria: Optional[str]
+    estoque_atual: int
+    preco_unitario: float
+
