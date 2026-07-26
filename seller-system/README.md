@@ -257,13 +257,42 @@ curl "http://localhost:8000/api/v1/compras/1"
   ]
 }
 ```
-
 **Resposta (404):**
 ```json
 {
   "detail": "Compra com ID 999 não encontrada"
 }
 ```
+
+### Relatórios
+
+Endpoints especializados para análise de dados e suporte a agentes inteligentes.
+
+#### Resumo de Cliente
+```
+GET /api/v1/relatorios/clientes/{cliente_id}
+```
+Retorna dados cadastrais, total de compras, valor total gasto, data da última compra e top 5 produtos mais comprados.
+
+#### Produtos Mais Vendidos
+```
+GET /api/v1/relatorios/produtos-mais-vendidos?limit=10&data_inicio=&data_fim=
+```
+**Parâmetros:** `limit` (1-50), `data_inicio`, `data_fim`.
+
+#### Resumo de Compras
+```
+GET /api/v1/relatorios/resumo-compras?data_inicio=&data_fim=
+```
+Retorna quantidade total de compras, receita total e ticket médio no período.
+
+#### Estoque Baixo
+```
+GET /api/v1/relatorios/estoque-baixo?limite_estoque=5
+```
+Retorna produtos ativos com estoque menor ou igual ao limite (mínimo 0).
+
+## Testes
 
 #### Filtro por intervalo de datas
 ```bash
