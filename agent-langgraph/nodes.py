@@ -1,11 +1,24 @@
 from state import AgenteState
 from tools import chamar_ferramenta_http
+from memory import memory
+import re
 
 def validar_pergunta(state: AgenteState):
     print("Validando pergunta...")
-    # Lógica de validação básica
-    if not state.get("pergunta_original"):
-        return {"erros": ["Pergunta vazia"]}
+    q = state.get("pergunta_original", "")
+    if not q or len(q) > 500:
+        return {"erros": ["Pergunta inválida ou muito longa"]}
+    
+    sid = state.get("session_id")
+    if sid and not re.match(r"^[a-zA-Z0-9_-]{8,32}$", sid):
+        return {"erros": ["Session ID inválido"]}
+
+    # Recupera contexto da memória
+    if sid:
+        contexto = memory.get_context(sid)
+        if contexto:
+            return {"contexto": contexto, "parametros": {}}
+    
     return {"parametros": {}}
 
 def identificar_intencao(state: AgenteState):
@@ -26,6 +39,12 @@ async def executar_ferramenta(state: AgenteState):
 
 def gerar_resposta(state: AgenteState):
     res = state.get("resultado_ferramenta", {})
+    sid = state.get("session_id")
+    
     if res.get("status") == "success":
-        return {"resposta_final": f"Dados encontrados: {res['data']}"}
-    return {"resposta_final": "Não foi possível completar a consulta."}
+        resposta = f"Dados encontrados: {res['data']}"
+        if sid:
+            memory.save_context(sid, resposta)
+        return {"resposta_final": resposta}
+    
+    return {"resposta_final": "Não foi possível processar sua solicitação."}
